@@ -1,5 +1,6 @@
 package hotswap.watcher;
 
+import dto.FileWatchEvent;
 import hotswap.watcher.event_queue.FileEventBlockingQueue;
 import hotswap.watcher.mock.WatchServicePollingMock;
 import org.junit.jupiter.api.DisplayName;
@@ -7,6 +8,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.WatchService;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileWatcherTest {
@@ -27,19 +32,28 @@ class FileWatcherTest {
 
     @Test
     @DisplayName("File Watcher Polling 테스트")
-    void fileWatchEventPooling(){
+    void fileWatchEventPooling() throws InterruptedException {
         WatchServicePollingMock watchServicePollingMock = new WatchServicePollingMock();
         watchServicePollingMock.startPolling();
-        watchServicePollingMock.sleep(1000);
+
+        await()
+            .atLeast(Duration.of(50, ChronoUnit.MILLIS))
+            .atMost(Duration.of(5, ChronoUnit.SECONDS))
+            .with()
+            .pollInterval(Duration.of(100, ChronoUnit.MILLIS))
+            .until(watchServicePollingMock::isInitialized);
+
         watchServicePollingMock.createFile();
 
-        System.out.println("is Empty : " + FileEventBlockingQueue.getInstance().isEmpty());
-        System.out.println("after size : " + FileEventBlockingQueue.getInstance().size());
+        FileEventBlockingQueue fileEventBlockingQueue = FileEventBlockingQueue.getInstance();
+        FileWatchEvent fileWatchEvent = fileEventBlockingQueue.take();
 
+        assertEquals("test.java", fileWatchEvent.getContext());
         watchServicePollingMock.deleteFile();
         
-        //todo Thread.sleep으로 하니까 시차 차이가 나느듯 하이 이를 Awaitility 로 변경할 필요가 있음
-        
-        assertNotEquals(0, FileEventBlockingQueue.getInstance().size());
+        //나중에 실 구현시에는 재귀호출을 이용하면 될듯
+        fileWatchEvent = fileEventBlockingQueue.take();
+        System.out.println(fileWatchEvent.getContext());
+        System.out.println(fileWatchEvent.getEventKind().name());
     }
 }

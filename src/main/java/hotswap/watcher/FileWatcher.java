@@ -1,14 +1,17 @@
 package hotswap.watcher;
 
 import hotswap.watcher.event_queue.FileEventBlockingQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
 public class FileWatcher {
+
+    private final Logger logger = LoggerFactory.getLogger(FileWatcher.class);
 
     public WatchService initWatcher() throws IOException {
         FileSystem defaultFileSystem = FileSystems.getDefault();
@@ -37,7 +40,7 @@ public class FileWatcher {
     public void fileWatchEventPooling(WatchService watchService) throws InterruptedException {
         WatchKey watchKey;
         while((watchKey = watchService.take()) != null) {
-            FileEventBlockingQueue.getInstance().putWatchFilEvent(watchKey.pollEvents());
+            FileEventBlockingQueue.getInstance().addWatchFilEvent(watchKey.pollEvents());
             watchKey.reset();
         }
     }

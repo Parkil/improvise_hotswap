@@ -14,11 +14,21 @@ public class WatchServicePollingMock {
     private final Executor executor = Executors.newFixedThreadPool(2);
     private final Path testFilePath = Path.of("src", "test", "java", "testobj", "test.java");
 
+    /*
+    volatile는 제한적인 sync를 제공한다
+
+     */
+    private volatile boolean initialized = false;
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
     public void startPolling() {
         executor.execute(() -> {
-            System.out.println("startPolling thread start");
             FileWatcher fileWatcher = new FileWatcher();
             try {
+                initialized = true;
                 WatchService watchService = fileWatcher.initWatcher();
                 fileWatcher.fileWatchEventPooling(watchService);
             } catch (IOException | InterruptedException e) {
@@ -29,7 +39,6 @@ public class WatchServicePollingMock {
 
     public void createFile() {
         executor.execute(() -> {
-            System.out.println("createFile thread start");
             try {
                 Files.createFile(testFilePath);
             } catch (IOException e) {
@@ -49,13 +58,6 @@ public class WatchServicePollingMock {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public void sleep(int delay) {
-        try {
-            Thread.sleep(delay);
-        } catch (InterruptedException e) {
         }
     }
 }
