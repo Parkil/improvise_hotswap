@@ -6,9 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.WatchEvent;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 
 public class FileEventBlockingQueue extends LinkedBlockingQueue<FileWatchEvent> {
 

@@ -1,4 +1,4 @@
-package learn;
+package learn.mock;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -12,18 +12,18 @@ public class AsyncService {
     private Executor executor = Executors.newFixedThreadPool(4);
     private volatile boolean initialized = false;
 
-    void initialize() {
+    public void initialize() {
         executor.execute(() -> {
             sleep(INIT_DELAY);
             initialized = true;
         });
     }
 
-    boolean isInitialized() {
+    public boolean isInitialized() {
         return initialized;
     }
 
-    void addValue(long val) {
+    public void addValue(long val) {
         throwIfNotInitialized();
         executor.execute(() -> {
             sleep(DELAY);
