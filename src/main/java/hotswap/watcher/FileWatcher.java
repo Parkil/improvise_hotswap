@@ -1,6 +1,6 @@
 package hotswap.watcher;
 
-import hotswap.watcher.event_queue.FileEventBlockingQueue;
+import hotswap.event_queue.FileEventBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +36,17 @@ public class FileWatcher {
             2.1번의 collection을 가져오는 ExecutorService(ExecutorCompletionService)를 take() 호출
                 2-1.해당 서비스에서는 collection의 값이 있는지 확인
             3.take()의 값이 null이 아닌 경우 event 가 존재한다는 뜻이므로 해당 event를 수행
+
+
+        여기에서 문제가 되는점
+        일반적인 File 생성 -> 삭제의 경우 event가 1개만 나오지만
+        Intellij 에서 생성시에는 1개의 파일에서 여러개의 event가 생성되는 경우가 있다
+
+        처음에는 polling을 고려하고 있지 않았지만 IDE에서 파일 등록/수정시 임시파일 생성 -> 본파일 생성 -> 임시파일 삭제
+        프로세스로 가고 있고 이를 event 별로 처리를 하게 되면 임시파일도 compile이나 기타처리를 해야 하는 문제가 있어 보이기 
+        때문에 이를 polling으로 변경하는게 맞아 보인다
+        
+        queue에 저장하는 로직은 그대로 가고 queue를 가져오는 로직에서 polling을 처리하는게 맞을듯
     */
     public void fileWatchEventPooling(WatchService watchService) throws InterruptedException {
         WatchKey watchKey;

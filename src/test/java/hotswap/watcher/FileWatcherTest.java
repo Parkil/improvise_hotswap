@@ -1,7 +1,8 @@
 package hotswap.watcher;
 
 import dto.FileWatchEvent;
-import hotswap.watcher.event_queue.FileEventBlockingQueue;
+import hotswap.thread.FileEventWatchThread;
+import hotswap.event_queue.FileEventBlockingQueue;
 import hotswap.watcher.mock.WatchServicePollingMock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ class FileWatcherTest {
 
         /*
         watchService.take() - 이벤트가 없으면 이벤트가 생길때까지 대기
-        watchService.poll() - 이멘트가 없으면 즉시 null 반환
+        watchService.poll() - 이벤트가 없으면 즉시 null 반환
          */
 
         assertNotNull(watchService);
@@ -48,12 +49,28 @@ class FileWatcherTest {
         FileEventBlockingQueue fileEventBlockingQueue = FileEventBlockingQueue.getInstance();
         FileWatchEvent fileWatchEvent = fileEventBlockingQueue.take();
 
-        assertEquals("test.java", fileWatchEvent.getContext());
-        watchServicePollingMock.deleteFile();
+//        assertEquals("test.java", fileWatchEvent.getContext());
+//        watchServicePollingMock.deleteFile();
         
         //나중에 실 구현시에는 재귀호출을 이용하면 될듯
-        fileWatchEvent = fileEventBlockingQueue.take();
-        System.out.println(fileWatchEvent.getContext());
-        System.out.println(fileWatchEvent.getEventKind().name());
+//        fileWatchEvent = fileEventBlockingQueue.take();
+//        System.out.println(fileWatchEvent.getContext());
+//        System.out.println(fileWatchEvent.getEventKind().name());
+    }
+
+    @Test
+    @DisplayName("File Watcher 실 Thread 테스트")
+    void test() {
+        FileEventWatchThread fileEventWatchThread = new FileEventWatchThread();
+        fileEventWatchThread.startWatchServiceThread();
+
+        await()
+            .atLeast(Duration.of(50, ChronoUnit.MILLIS))
+            .atMost(Duration.of(5, ChronoUnit.SECONDS))
+            .with()
+            .pollInterval(Duration.of(100, ChronoUnit.MILLIS))
+            .until(fileEventWatchThread::isWatchServiceRunning);
+
+        fileEventWatchThread.startWatchServiceThread();
     }
 }

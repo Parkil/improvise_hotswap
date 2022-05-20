@@ -1,21 +1,28 @@
 package dto;
 
 import java.nio.file.WatchEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileWatchEvent {
-    private final String context;
-    private final WatchEvent.Kind<?> eventKind;
+    private final List<EventDetail> eventDetailList = new ArrayList<>();
 
-    public FileWatchEvent(String context, WatchEvent.Kind<?> eventKind) {
-        this.context = context;
-        this.eventKind = eventKind;
+    public FileWatchEvent(List<WatchEvent<?>> watchEventList) {
+        eventDetailList.addAll(watchEventList
+                .stream()
+                .map(watchEvent -> new EventDetail(watchEvent.context().toString(), watchEvent.kind()))
+                .collect(Collectors.toList()));
     }
 
-    public String getContext() {
-        return context;
+    public List<EventDetail> getEventDetailList() {
+        return eventDetailList;
     }
 
-    public WatchEvent.Kind<?> getEventKind() {
-        return eventKind;
+    @Override
+    public String toString() {
+        return "FileWatchEvent{" +
+                "eventDetailList=" + eventDetailList +
+                '}';
     }
 }

@@ -1,4 +1,4 @@
-package hotswap.watcher.event_queue;
+package hotswap.event_queue;
 
 import dto.FileWatchEvent;
 import org.slf4j.Logger;
@@ -22,14 +22,8 @@ public class FileEventBlockingQueue extends LinkedBlockingQueue<FileWatchEvent> 
         return fileEventBlockingQueue;
     }
 
-    public synchronized void addWatchFilEvent(List<WatchEvent<?>> watchEventList) {
-        watchEventList.forEach(row -> {
-            FileWatchEvent event = new FileWatchEvent(row.context().toString(), row.kind());
-            logger.info("queue offer result : {}",super.offer(event));
-        });
-        
-        //thread 기반에서 size()와 isEmpty()는 정상적으로 작동하지 않으므로 주의
-        logger.info("size test : {}", super.size());
-        logger.info("is empty test : {}", isEmpty());
+    public void addWatchFilEvent(List<WatchEvent<?>> watchEventList) {
+        FileWatchEvent event = new FileWatchEvent(watchEventList);
+        logger.info("queue offer result : {}", super.offer(event));
     }
 }
