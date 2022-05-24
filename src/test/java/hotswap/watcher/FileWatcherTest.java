@@ -1,16 +1,21 @@
 package hotswap.watcher;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.FileWatchEvent;
+import hotswap.processor.ProcessFileEvent;
 import hotswap.thread.FileEventWatchThread;
-import hotswap.event_queue.FileEventBlockingQueue;
-import hotswap.watcher.mock.WatchServicePollingMock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.WatchService;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,44 +38,32 @@ class FileWatcherTest {
 
     @Test
     @DisplayName("File Watcher Polling 테스트")
-    void fileWatchEventPooling() throws InterruptedException {
-        WatchServicePollingMock watchServicePollingMock = new WatchServicePollingMock();
-        watchServicePollingMock.startPolling();
+    void fileWatchEventPooling() throws IOException, InterruptedException {
 
-        await()
-            .atLeast(Duration.of(50, ChronoUnit.MILLIS))
-            .atMost(Duration.of(5, ChronoUnit.SECONDS))
-            .with()
-            .pollInterval(Duration.of(100, ChronoUnit.MILLIS))
-            .until(watchServicePollingMock::isInitialized);
-
-        watchServicePollingMock.createFile();
-
-        FileEventBlockingQueue fileEventBlockingQueue = FileEventBlockingQueue.getInstance();
-        FileWatchEvent fileWatchEvent = fileEventBlockingQueue.take();
-
-//        assertEquals("test.java", fileWatchEvent.getContext());
-//        watchServicePollingMock.deleteFile();
-        
-        //나중에 실 구현시에는 재귀호출을 이용하면 될듯
-//        fileWatchEvent = fileEventBlockingQueue.take();
-//        System.out.println(fileWatchEvent.getContext());
-//        System.out.println(fileWatchEvent.getEventKind().name());
-    }
-
-    @Test
-    @DisplayName("File Watcher 실 Thread 테스트")
-    void test() {
         FileEventWatchThread fileEventWatchThread = new FileEventWatchThread();
         fileEventWatchThread.startWatchServiceThread();
 
-        await()
-            .atLeast(Duration.of(50, ChronoUnit.MILLIS))
-            .atMost(Duration.of(5, ChronoUnit.SECONDS))
-            .with()
-            .pollInterval(Duration.of(100, ChronoUnit.MILLIS))
-            .until(fileEventWatchThread::isWatchServiceRunning);
+        //FileEventWatchThread 가 작동할때 까지 대기
+        Thread.sleep(1000);
 
-        fileEventWatchThread.startWatchServiceThread();
+        ProcessFileEvent processFileEvent = new ProcessFileEvent();
+        final List<FileWatchEvent>[] fileWatchEventList = new List[]{null};
+
+        Path testFilePath = Path.of("src", "test", "java", "testobj", "test.java");
+        Files.createFile(testFilePath);
+
+        await()
+            .atLeast(Duration.of(1000, ChronoUnit.MILLIS))
+            .atMost(Duration.of(30, ChronoUnit.SECONDS))
+            .with()
+            .pollInterval(Duration.of(1000, ChronoUnit.MILLIS))
+            .until(() -> !(fileWatchEventList[0] = processFileEvent.getWatchedEventList()).isEmpty());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        System.out.println(objectMapper.writeValueAsString(fileWatchEventList[0]));
+
+        Files.deleteIfExists(testFilePath);
+        assertFalse(fileWatchEventList[0].isEmpty());
     }
 }

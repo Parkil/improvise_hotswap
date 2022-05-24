@@ -19,7 +19,7 @@ public class ProcessFileEventThread {
         schService.scheduleAtFixedRate(() -> {
             logger.info("ProcessFileEventThread polling...");
             ProcessFileEvent processFileEvent = new ProcessFileEvent();
-            processFileEvent.process();
-        },1000L, 2000L, TimeUnit.MILLISECONDS);
+            processFileEvent.getWatchedEventList();
+        },1000L, 1000L, TimeUnit.MILLISECONDS);
     }
 }

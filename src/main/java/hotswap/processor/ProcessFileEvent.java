@@ -12,17 +12,16 @@ public class ProcessFileEvent {
 
     private final Logger logger = LoggerFactory.getLogger(ProcessFileEvent.class);
 
-    public void process() {
+    public List<FileWatchEvent> getWatchedEventList() {
         FileEventBlockingQueue fileEventBlockingQueue = FileEventBlockingQueue.getInstance();
         FileWatchEvent fileWatchEvent;
 
         List<FileWatchEvent> collectedEventList = new ArrayList<>();
-
         while((fileWatchEvent = fileEventBlockingQueue.poll()) != null) {
             logger.info("collected file watch event : {}", fileWatchEvent);
             collectedEventList.add(fileWatchEvent);
         }
         
-        // todo 수집된 정보 처리 로직 구현
+        return collectedEventList;
     }
 }
