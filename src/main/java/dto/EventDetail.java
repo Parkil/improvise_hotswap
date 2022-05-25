@@ -1,29 +1,31 @@
 package dto;
 
+import dto.enum_vo.WatchEventType;
+
 import java.nio.file.WatchEvent;
 
 public class EventDetail {
     private final String context;
-    private final WatchEvent.Kind<?> eventKind;
+    private final WatchEventType watchEventType;
 
     public EventDetail(String context, WatchEvent.Kind<?> eventKind) {
         this.context = context;
-        this.eventKind = eventKind;
+        watchEventType = WatchEventType.valueOf(eventKind.name());
     }
 
     public String getContext() {
         return context;
     }
 
-    public WatchEvent.Kind<?> getEventKind() {
-        return eventKind;
+    public WatchEventType getWatchEventType() {
+        return watchEventType;
     }
 
     @Override
     public String toString() {
         return "EventDetail{" +
                 "context='" + context + '\'' +
-                ", eventKind=" + eventKind +
+                ", watchEventType=" + watchEventType.name() +
                 '}';
     }
 }

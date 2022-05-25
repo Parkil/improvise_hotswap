@@ -1,0 +1,50 @@
+[
+    {
+        "eventDetailList": [
+            {
+                "context": "fdsfds.java",
+                "watchEventType": "ENTRY_CREATE"
+            }
+        ]
+    },
+    {
+        "eventDetailList": [
+            {
+                "context": "fdsfds.java~",
+                "watchEventType": "ENTRY_CREATE"
+            }
+        ]
+    },
+    {
+        "eventDetailList": [
+            {
+                "context": "fdsfds.java~",
+                "watchEventType": "ENTRY_MODIFY"
+            }
+        ]
+    },
+    {
+        "eventDetailList": [
+            {
+                "context": "fdsfds.java",
+                "watchEventType": "ENTRY_MODIFY"
+            }
+        ]
+    },
+    {
+        "eventDetailList": [
+            {
+                "context": "fdsfds.java",
+                "watchEventType": "ENTRY_MODIFY"
+            }
+        ]
+    },
+    {
+        "eventDetailList": [
+            {
+                "context": "fdsfds.java~",
+                "watchEventType": "ENTRY_DELETE"
+            }
+        ]
+    }
+]

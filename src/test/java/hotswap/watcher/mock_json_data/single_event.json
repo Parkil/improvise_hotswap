@@ -1,0 +1,10 @@
+[
+    {
+        "eventDetailList": [
+            {
+                "context": "test.java",
+                "watchEventType": "ENTRY_CREATE"
+            }
+        ]
+    }
+]

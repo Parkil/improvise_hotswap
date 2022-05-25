@@ -21,7 +21,9 @@ public class ProcessFileEvent {
             logger.info("collected file watch event : {}", fileWatchEvent);
             collectedEventList.add(fileWatchEvent);
         }
-        
+
+//        collectedEventList.stream().flatMap(watchEvent -> )
+
         return collectedEventList;
     }
 }

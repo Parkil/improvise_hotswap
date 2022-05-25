@@ -8,6 +8,8 @@ import hotswap.processor.ProcessFileEvent;
 import hotswap.thread.FileEventWatchThread;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,6 +23,9 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileWatcherTest {
+
+    private final Logger logger = LoggerFactory.getLogger(FileWatcherTest.class);
+
     @Test
     @DisplayName("File Watcher 초기화 테스트")
     void initWatcher() throws IOException {
@@ -61,7 +66,7 @@ class FileWatcherTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-        System.out.println(objectMapper.writeValueAsString(fileWatchEventList[0]));
+        logger.info("event list json str : {}",objectMapper.writeValueAsString(fileWatchEventList[0]));
 
         Files.deleteIfExists(testFilePath);
         assertFalse(fileWatchEventList[0].isEmpty());
