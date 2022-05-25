@@ -2,15 +2,18 @@ package dto;
 
 import dto.enum_vo.WatchEventType;
 
-import java.nio.file.WatchEvent;
-
 public class EventDetail {
     private final String context;
     private final WatchEventType watchEventType;
 
-    public EventDetail(String context, WatchEvent.Kind<?> eventKind) {
+    public EventDetail() {
+        this.context = "";
+        this.watchEventType = WatchEventType.NONE;
+    }
+
+    public EventDetail(String context, String watchEventTypeStr) {
         this.context = context;
-        watchEventType = WatchEventType.valueOf(eventKind.name());
+        this.watchEventType = WatchEventType.valueOf(watchEventTypeStr);
     }
 
     public String getContext() {

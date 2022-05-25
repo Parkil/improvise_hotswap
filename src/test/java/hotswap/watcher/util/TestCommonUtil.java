@@ -1,5 +1,4 @@
-package test;
-
+package hotswap.watcher.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -13,15 +12,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class MainTest {
-    public static void main(String[] args) throws IOException {
-        Path testFilePath = Path.of("src", "test", "java", "hotswap", "watcher", "mock_json_data", "multi_event.json");
-        List<String> tempList = Files.readAllLines(testFilePath, StandardCharsets.UTF_8);
-        String aaa = String.join(" ", tempList);
+public class TestCommonUtil {
+    public static List<FileWatchEvent> getObjectFromJson(Path jsonPath) throws IOException {
+        List<String> tempList = Files.readAllLines(jsonPath, StandardCharsets.UTF_8);
+        String jsonStr = String.join(" ", tempList);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-        List<FileWatchEvent> studentList = objectMapper.readValue(aaa, new TypeReference<List<FileWatchEvent>>() {});
-        System.out.println(studentList);
+        return objectMapper.readValue(jsonStr, new TypeReference<List<FileWatchEvent>>() {});
     }
 }
