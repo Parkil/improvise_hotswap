@@ -8,7 +8,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ class JavaCompileJavaTest {
         assertTrue(compileErrorList.isEmpty());
 
         Path javaClassPath = Path.of("src", "test", "java", "hotswap", "watcher", "mock_java_data", "DummyTest.class");
+
         assertTrue(Files.exists(javaClassPath));
     }
 }

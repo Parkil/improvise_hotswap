@@ -11,9 +11,9 @@ public class CompileJava {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
         try(StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null)) {
-            Iterable<? extends JavaFileObject> compilationUnits1 =
+            Iterable<? extends JavaFileObject> compilationUnits =
                     fileManager.getJavaFileObjectsFromPaths(javaPathList);
-            compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits1).call();
+            compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits).call();
         }catch(IOException e) {
             throw new IOException(e);
         }
