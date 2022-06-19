@@ -1,4 +1,4 @@
-package javafile;
+package util;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class JavaFileUtilTest {
     @Test
     @DisplayName("package 명 가져오는 로직 테스트")
-    void getPackageTest() throws IOException {
+    void getPackage() throws IOException {
         Path targetPath = Path.of("src", "test", "java", "hotswap", "watcher", "mock_java_data", "DummyTest.java");
         String packageStr = JavaFileUtil.getPackage(targetPath);
 

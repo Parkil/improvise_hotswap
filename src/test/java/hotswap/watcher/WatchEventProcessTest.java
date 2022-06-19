@@ -2,7 +2,7 @@ package hotswap.watcher;
 
 import dto.FileWatchEvent;
 import hotswap.processor.ProcessFileEvent;
-import hotswap.watcher.util.TestCommonUtil;
+import hotswap.watcher.test_util.TestCommonUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

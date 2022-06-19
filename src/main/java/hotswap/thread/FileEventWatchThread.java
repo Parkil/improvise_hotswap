@@ -1,10 +1,12 @@
 package hotswap.thread;
 
+import config.Config;
 import hotswap.watcher.FileWatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.WatchService;
 import java.util.concurrent.*;
 
@@ -19,7 +21,7 @@ public class FileEventWatchThread {
             FileWatcher fileWatcher = new FileWatcher();
             try {
                 logger.info("watch service thread started");
-                WatchService watchService = fileWatcher.initWatcher();
+                WatchService watchService = fileWatcher.initWatcher(Config.WATCH_TARGET_PATH);
                 fileWatcher.fileWatchEventPooling(watchService);
             } catch (IOException ioe) {
                 ioe.printStackTrace();

@@ -3,6 +3,7 @@ package hotswap.watcher;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import config.Config;
 import dto.FileWatchEvent;
 import hotswap.processor.ProcessFileEvent;
 import hotswap.thread.FileEventWatchThread;
@@ -30,7 +31,7 @@ class FileWatcherTest {
     @DisplayName("File Watcher 초기화 테스트")
     void initWatcher() throws IOException {
         FileWatcher fileWatcher = new FileWatcher();
-        WatchService watchService = fileWatcher.initWatcher();
+        WatchService watchService = fileWatcher.initWatcher(Config.WATCH_TARGET_PATH);
 
         /*
         watchService.take() - 이벤트가 없으면 이벤트가 생길때까지 대기

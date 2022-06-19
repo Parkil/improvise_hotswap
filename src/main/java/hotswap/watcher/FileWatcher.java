@@ -13,11 +13,11 @@ public class FileWatcher {
 
     private final Logger logger = LoggerFactory.getLogger(FileWatcher.class);
 
-    public WatchService initWatcher() throws IOException {
+    public WatchService initWatcher(Path watchTargetPath) throws IOException {
         FileSystem defaultFileSystem = FileSystems.getDefault();
         WatchService watchService = defaultFileSystem.newWatchService();
         Path targetPath = defaultFileSystem.getPath("src", "test", "java", "testobj");
-        targetPath.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+        watchTargetPath.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 
         return watchService;
     }

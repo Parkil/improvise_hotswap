@@ -1,4 +1,4 @@
-package hotswap.watcher.util;
+package hotswap.watcher.test_util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
