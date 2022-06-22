@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.WatchService;
 import java.util.concurrent.*;
 
@@ -21,7 +20,7 @@ public class FileEventWatchThread {
             FileWatcher fileWatcher = new FileWatcher();
             try {
                 logger.info("watch service thread started");
-                WatchService watchService = fileWatcher.initWatcher(Config.WATCH_TARGET_PATH);
+                WatchService watchService = fileWatcher.initWatcher(Config.WATCH_ROOT_PATH);
                 fileWatcher.fileWatchEventPooling(watchService);
             } catch (IOException ioe) {
                 ioe.printStackTrace();

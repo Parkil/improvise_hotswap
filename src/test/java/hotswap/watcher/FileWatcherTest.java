@@ -31,7 +31,7 @@ class FileWatcherTest {
     @DisplayName("File Watcher 초기화 테스트")
     void initWatcher() throws IOException {
         FileWatcher fileWatcher = new FileWatcher();
-        WatchService watchService = fileWatcher.initWatcher(Config.WATCH_TARGET_PATH);
+        WatchService watchService = fileWatcher.initWatcher(Config.WATCH_ROOT_PATH);
 
         /*
         watchService.take() - 이벤트가 없으면 이벤트가 생길때까지 대기

@@ -1,5 +1,6 @@
 package hotswap.thread;
 
+import hotswap.compiler.RedefineClass;
 import hotswap.processor.ProcessFileEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +20,14 @@ public class ProcessFileEventThread {
     // consumer (using polling)
     public void processEventThread(Instrumentation inst) {
         schService.scheduleAtFixedRate(() -> {
-            logger.info("ProcessFileEventThread polling...");
+//            logger.info("ProcessFileEventThread polling...");
             ProcessFileEvent processFileEvent = new ProcessFileEvent();
             List<String> targetFileNameList = processFileEvent.getTargetFileNameList(processFileEvent.getWatchedEventList());
 
-            logger.info("targetList : {}", targetFileNameList);
+            if(!targetFileNameList.isEmpty()) {
+                logger.info("targetList : {}", targetFileNameList);
+                new RedefineClass().redefine(targetFileNameList, inst);
+            }
         },1000L, 1000L, TimeUnit.MILLISECONDS);
     }
 }

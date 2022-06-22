@@ -3,9 +3,12 @@ package hotswap.watcher;
 import hotswap.event_queue.FileEventBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.FileUtil;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -13,14 +16,20 @@ public class FileWatcher {
 
     private final Logger logger = LoggerFactory.getLogger(FileWatcher.class);
 
-    public WatchService initWatcher(Path watchTargetPath) throws IOException {
+    public WatchService initWatcher(Path watchBasePath) throws IOException {
         FileSystem defaultFileSystem = FileSystems.getDefault();
         WatchService watchService = defaultFileSystem.newWatchService();
-        Path targetPath = defaultFileSystem.getPath("src", "test", "java", "testobj");
-        watchTargetPath.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+
+        List<Path> subPathList = FileUtil.findAllSubPath(watchBasePath); // watchBasePath 포함
+
+        for(Path path : subPathList) {
+            path.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+        }
 
         return watchService;
     }
+
+
 
     /*
         watchKey.pollEvents()를 받아서 바로 처리하게 되면 구현은 편하겠지만
@@ -51,8 +60,17 @@ public class FileWatcher {
     public void fileWatchEventPooling(WatchService watchService) throws InterruptedException {
         WatchKey watchKey;
         while((watchKey = watchService.take()) != null) {
-            FileEventBlockingQueue.getInstance().addWatchFilEvent(watchKey.pollEvents());
+            List<WatchEvent<?>> watchEventList = watchKey.pollEvents();
+
+            FileEventBlockingQueue.getInstance().addWatchFilEvent(filterWatchEventList(watchEventList));
             watchKey.reset();
         }
+    }
+
+    // watch event 중 context 가 directory 와 관련된 event 를 filtering
+    private List<WatchEvent<?>> filterWatchEventList(List<WatchEvent<?>> rawEventList) {
+        return rawEventList.stream().filter(watchEvent ->
+            watchEvent.context().toString().endsWith(".java")
+        ).collect(Collectors.toList());
     }
 }
