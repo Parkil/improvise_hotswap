@@ -5,6 +5,7 @@ import hotswap.thread.FileEventWatchThread;
 import hotswap.thread.ProcessFileEventThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.FileUtil;
 
 import java.lang.instrument.Instrumentation;
 
@@ -15,7 +16,8 @@ public class AgentMain {
 
     public static void premain(String agentArgs, Instrumentation inst) {
         //vm option example : -javaagent:~.jar -Dhotswap.watch.root=src/main/java
-        if(Config.setWatchRootPath(System.getProperty("hotswap.watch.root"))) {
+        if(Config.setWatchRootPath(System.getProperty("hotswap.watch.root"))
+                && FileUtil.createTempClassPath(Config.getTempClassPath())) {
             logger.info("hotswap starting watch root : {}", Config.getWatchRootPath());
 
             new FileEventWatchThread().startWatchServiceThread();

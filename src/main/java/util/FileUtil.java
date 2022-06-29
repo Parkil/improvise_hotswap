@@ -1,5 +1,9 @@
 package util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -9,7 +13,21 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FileUtil {
+    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
+
     private FileUtil(){}
+
+    public static boolean createTempClassPath(File file) {
+        if(!file.exists()) {
+            boolean result = file.mkdirs();
+            if(!result) {
+                logger.info("temp class directory not created. path[{}]", file.getPath());
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     public static List<Path> findByFileName(Path startPath, String filePattern) {
 

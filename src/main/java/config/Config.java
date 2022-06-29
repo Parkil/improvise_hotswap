@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.FileUtil;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -13,6 +14,8 @@ public class Config {
     private static final Logger logger = LoggerFactory.getLogger(Config.class);
 
     private static Path watchRootPath = Path.of("src", "main", "java");
+
+    private static final File tempClassPath = new File("build/hotswap_temp");
 
     private Config(){}
 
@@ -36,4 +39,6 @@ public class Config {
     public static Path getWatchRootPath() {
         return watchRootPath;
     }
+
+    public static File getTempClassPath() { return tempClassPath; }
 }
