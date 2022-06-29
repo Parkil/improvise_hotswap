@@ -21,7 +21,7 @@ public class RedefineClass {
     public void redefine(List<String> targetNameList, Instrumentation inst) {
         if(!targetNameList.isEmpty()) {
             targetNameList.forEach(targetName -> {
-                List<Path> findFileList = FileUtil.findByFileName(Config.WATCH_ROOT_PATH, targetName);
+                List<Path> findFileList = FileUtil.findByFileName(Config.getWatchRootPath(), targetName);
 
                 if(!findFileList.isEmpty()) {
                     logger.info("targetFile compile start");

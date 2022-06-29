@@ -20,7 +20,7 @@ public class FileEventWatchThread {
             FileWatcher fileWatcher = new FileWatcher();
             try {
                 logger.info("watch service thread started");
-                WatchService watchService = fileWatcher.initWatcher(Config.WATCH_ROOT_PATH);
+                WatchService watchService = fileWatcher.initWatcher(Config.getWatchRootPath());
                 fileWatcher.fileWatchEventPooling(watchService);
             } catch (IOException ioe) {
                 ioe.printStackTrace();
