@@ -14,6 +14,8 @@ public class FileEventWatchThread {
 
     private final Logger logger = LoggerFactory.getLogger(FileEventWatchThread.class);
 
+
+    //todo exception chaining 적용
     // producer
     public void startWatchServiceThread() {
         executorService.execute(() -> {
