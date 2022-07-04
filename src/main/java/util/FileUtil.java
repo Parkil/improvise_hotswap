@@ -17,19 +17,6 @@ public class FileUtil {
 
     private FileUtil(){}
 
-    // todo 조건이 맞지 않을 경우 예외를 반환하도록 변경
-    public static boolean createTempClassPath(File file) {
-        if(!file.exists()) {
-            boolean result = file.mkdirs();
-            if(!result) {
-                logger.info("temp class directory not created. path[{}]", file.getPath());
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public static List<Path> findByFileName(Path startPath, String filePattern) {
 
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher(String.format("glob:%s", filePattern));
