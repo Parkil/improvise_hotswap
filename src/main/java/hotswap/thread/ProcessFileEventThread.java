@@ -1,5 +1,6 @@
 package hotswap.thread;
 
+import exception.exception.JavaRedefineException;
 import hotswap.compiler.RedefineClass;
 import hotswap.processor.ProcessFileEvent;
 import org.slf4j.Logger;
@@ -15,18 +16,20 @@ public class ProcessFileEventThread {
 
     private static final ScheduledExecutorService schService = Executors.newScheduledThreadPool(1);
 
-    private final Logger logger = LoggerFactory.getLogger(ProcessFileEventThread.class);
+    private final RedefineClass redefineClass = new RedefineClass();
 
     // consumer (using polling)
     public void processEventThread(Instrumentation inst) {
         schService.scheduleAtFixedRate(() -> {
-//            logger.info("ProcessFileEventThread polling...");
             ProcessFileEvent processFileEvent = new ProcessFileEvent();
             List<String> targetFileNameList = processFileEvent.getTargetFileNameList(processFileEvent.getWatchedEventList());
 
             if(!targetFileNameList.isEmpty()) {
-                logger.info("targetList : {}", targetFileNameList);
-                new RedefineClass().redefine(targetFileNameList, inst);
+                try {
+                    redefineClass.execRedefine(targetFileNameList, inst);
+                } catch (JavaRedefineException e) {
+                    e.printStackTrace();
+                }
             }
         },1000L, 1000L, TimeUnit.MILLISECONDS);
     }

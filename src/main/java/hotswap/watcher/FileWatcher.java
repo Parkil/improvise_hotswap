@@ -14,8 +14,6 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 public class FileWatcher {
 
-    private final Logger logger = LoggerFactory.getLogger(FileWatcher.class);
-
     public WatchService initWatcher(Path watchBasePath) throws IOException {
         FileSystem defaultFileSystem = FileSystems.getDefault();
         WatchService watchService = defaultFileSystem.newWatchService();

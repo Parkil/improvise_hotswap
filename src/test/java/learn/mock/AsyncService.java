@@ -40,6 +40,7 @@ public class AsyncService {
         try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

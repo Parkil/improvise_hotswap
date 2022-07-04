@@ -1,10 +1,12 @@
 package hotswap.compiler;
 
 import config.Config;
+import dto.ClassFileInfo;
+import exception.exception.JavaCompileException;
+import exception.exception.JavaRedefineException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.FileUtil;
-import util.JavaFileUtil;
 
 import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
@@ -12,55 +14,54 @@ import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class RedefineClass {
 
     private final Logger logger = LoggerFactory.getLogger(RedefineClass.class);
 
-    public void redefine(List<String> targetNameList, Instrumentation inst) {
-        if(!targetNameList.isEmpty()) {
-            targetNameList.forEach(targetName -> {
-                List<Path> findFileList = FileUtil.findByFileName(Config.getWatchRootPath(), targetName);
+    private final CompileJava compileJava = new CompileJava();
 
-                if(!findFileList.isEmpty()) {
-                    logger.info("targetFile compile start");
-                    try {
-                        new CompileJava().execCompile(findFileList);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    logger.info("targetFile compile end");
+    public void execRedefine(List<String> classNameList, Instrumentation inst) throws JavaRedefineException {
+        classNameList = Optional.ofNullable(classNameList).orElse(Collections.emptyList());
 
-                    findFileList.forEach(path -> {
+        for(String className : classNameList) {
+            List<Path> findFileList = FileUtil.findByFileName(Config.getWatchRootPath(), className);
 
-                        String classFileName = path.toFile().getName().split("\\.")[0] + ".class";
-                        Path classFilePath = Path.of(path.getParent().toString(), classFileName);
+            try {
+                compileJava.execCompile(findFileList);
+            } catch (JavaCompileException e) {
+                throw new JavaRedefineException(e);
+            }
 
-                        String packageStr = JavaFileUtil.getPackage(path);
+            redefineClass(findFileList, inst);
+        }
+    }
 
-                        logger.info("redefine start class file : {}", classFileName);
+    private void redefineClass(List<Path> javaFilePathList, Instrumentation inst) throws JavaRedefineException{
+        List<ClassFileInfo> classFileInfoList = compileJava.findClassPaths(javaFilePathList);
 
-                        try {
-                            byte[] classByteCode = Files.readAllBytes(classFilePath);
+        for(ClassFileInfo classFileInfo : classFileInfoList) {
+            try {
+                byte[] classByteCode = Files.readAllBytes(classFileInfo.getClassFilePath());
 
-                            String forName = packageStr + ("".equals(packageStr.trim()) ? "" : ".") + path.toFile().getName().split("\\.")[0];
-                            logger.info("class forName : {}", forName);
+                String forName = classFileInfo.getPackageName()
+                        + ("".equals(classFileInfo.getPackageName() .trim()) ? "" : ".")
+                        + classFileInfo.getClassFilePath().toFile().getName().split("\\.")[0];
 
-                            Class targetClass = Class.forName(forName);
-                            logger.info("target Class : {}",targetClass);
-                            ClassDefinition cd = new ClassDefinition(targetClass, classByteCode);
-                            inst.redefineClasses(cd);
+                logger.info("class forName : {}", forName);
 
-                            Files.delete(classFilePath);
-                        } catch (IOException | ClassNotFoundException | UnmodifiableClassException e) {
-                            e.printStackTrace();
-                        }
+                Class<?> targetClass = Class.forName(forName);
+                logger.info("target Class : {}",targetClass);
+                ClassDefinition cd = new ClassDefinition(targetClass, classByteCode);
+                inst.redefineClasses(cd);
 
-                        logger.info("redefine end");
-                    });
-                }
-            });
+                Files.delete(classFileInfo.getClassFilePath());
+            } catch (IOException | ClassNotFoundException | UnmodifiableClassException e) {
+                throw new JavaRedefineException(e);
+            }
         }
     }
 }

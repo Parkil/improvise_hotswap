@@ -1,17 +1,14 @@
 package hotswap.watcher;
 
+import config.Config;
+import dto.ClassFileInfo;
+import exception.exception.JavaCompileException;
 import hotswap.compiler.CompileJava;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -25,19 +22,35 @@ class JavaCompileJavaTest {
 
     @Test
     @DisplayName("Java File Compile 테스트")
-    void compileTest() throws IOException {
+    void compileTest() {
         Path javaFilePath = Path.of("src", "test", "java", "hotswap", "watcher", "mock_java_data", "DummyTest.java");
         List<Path> javaFilePathList = new ArrayList<>();
         javaFilePathList.add(javaFilePath);
 
-        CompileJava compileJava = new CompileJava();
-        List<Diagnostic<? extends JavaFileObject>> compileErrorList = compileJava.execCompile(javaFilePathList);
-        logger.info("compileResultList : {}", compileErrorList);
+        Throwable error = null;
+        try {
+            new CompileJava().execCompile(javaFilePathList);
+        } catch (JavaCompileException e) {
+            error = e;
+        }
 
-        assertTrue(compileErrorList.isEmpty());
+        logger.info("throwable : "+ error);
+        assertNull(error);
 
-        Path javaClassPath = Path.of("src", "test", "java", "hotswap", "watcher", "mock_java_data", "DummyTest.class");
+        Path javaClassPath = Path.of(Config.getTempClassPath().getAbsolutePath(), "hotswap", "watcher", "mock_java_data", "DummyTest.class");
 
         assertTrue(Files.exists(javaClassPath));
+    }
+
+    @Test
+    @DisplayName("컴파일후 class 파일 경로 추출 테스트")
+    void getClassPathTest() {
+        Path javaFilePath = Path.of("src", "test", "java", "hotswap", "watcher", "mock_java_data", "DummyTest.java");
+        List<Path> orgJavaPathList = new ArrayList<>();
+        orgJavaPathList.add(javaFilePath);
+
+        List<ClassFileInfo> classPathList = new CompileJava().findClassPaths(orgJavaPathList);
+
+        assertEquals("DummyTest.class", classPathList.get(0).getClassFilePath().getFileName().toString());
     }
 }
