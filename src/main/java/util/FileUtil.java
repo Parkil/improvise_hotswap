@@ -17,6 +17,7 @@ public class FileUtil {
 
     private FileUtil(){}
 
+    // todo 조건이 맞지 않을 경우 예외를 반환하도록 변경
     public static boolean createTempClassPath(File file) {
         if(!file.exists()) {
             boolean result = file.mkdirs();
