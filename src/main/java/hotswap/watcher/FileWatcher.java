@@ -14,6 +14,8 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 public class FileWatcher {
 
+    private final Logger logger = LoggerFactory.getLogger(FileWatcher.class);
+
     public WatchService initWatcher(Path watchBasePath) throws IOException {
         FileSystem defaultFileSystem = FileSystems.getDefault();
         WatchService watchService = defaultFileSystem.newWatchService();
@@ -60,7 +62,12 @@ public class FileWatcher {
         while((watchKey = watchService.take()) != null) {
             List<WatchEvent<?>> watchEventList = watchKey.pollEvents();
 
-            FileEventBlockingQueue.getInstance().addWatchFilEvent(filterWatchEventList(watchEventList));
+            boolean offerResult = FileEventBlockingQueue.getInstance().addWatchFilEvent(filterWatchEventList(watchEventList));
+
+            if(!offerResult) {
+                logger.info("watch file event not inserted");
+            }
+
             watchKey.reset();
         }
     }

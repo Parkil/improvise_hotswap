@@ -1,6 +1,7 @@
 package hotswap.thread;
 
 import config.Config;
+import exception.runtime.ThreadException;
 import hotswap.watcher.FileWatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +15,6 @@ public class FileEventWatchThread {
 
     private final Logger logger = LoggerFactory.getLogger(FileEventWatchThread.class);
 
-
-    //todo exception chaining 적용
     // producer
     public void startWatchServiceThread() {
         executorService.execute(() -> {
@@ -25,10 +24,10 @@ public class FileEventWatchThread {
                 WatchService watchService = fileWatcher.initWatcher(Config.getWatchRootPath());
                 fileWatcher.fileWatchEventPooling(watchService);
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                throw new ThreadException(ioe);
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
-                ie.printStackTrace();
+                throw new ThreadException(ie);
             }
         });
     }

@@ -1,9 +1,7 @@
 package util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import exception.runtime.FileException;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -13,7 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FileUtil {
-    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
     private FileUtil(){}
 
@@ -21,14 +18,13 @@ public class FileUtil {
 
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher(String.format("glob:%s", filePattern));
 
-        List<Path> result = new ArrayList<>();
+        List<Path> result;
         try (Stream<Path> pathStream = Files.find(startPath, Integer.MAX_VALUE,
                 (p, basicFileAttributes) -> matcher.matches(p.getFileName()))
         ) {
             result = pathStream.collect(Collectors.toList());
         } catch (IOException e) {
-            e.printStackTrace();
-            return result;
+            throw new FileException(e);
         }
 
         return result;
@@ -46,7 +42,7 @@ public class FileUtil {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new FileException(e);
         }
 
         return allSubPathList;

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class CompileJava {
@@ -53,7 +54,8 @@ public class CompileJava {
     }
 
     public List<ClassFileInfo> findClassPaths(List<Path> javaPathList) {
-        return javaPathList.stream().map(this::classFileLambda).collect(Collectors.toList());
+        return javaPathList.stream().map(this::classFileLambda)
+                .filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     private ClassFileInfo classFileLambda(Path javaFilePath) {

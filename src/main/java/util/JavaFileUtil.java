@@ -1,6 +1,6 @@
 package util;
 
-import exception.runtime.GlobalException;
+import exception.runtime.FileException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -32,8 +32,7 @@ public class JavaFileUtil {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new GlobalException(e);
+            throw new FileException(e);
         }
 
         return packageStr;

@@ -1,10 +1,9 @@
 package hotswap.thread;
 
 import exception.exception.JavaRedefineException;
+import exception.runtime.ThreadException;
 import hotswap.compiler.RedefineClass;
 import hotswap.processor.ProcessFileEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.instrument.Instrumentation;
 import java.util.List;
@@ -28,7 +27,7 @@ public class ProcessFileEventThread {
                 try {
                     redefineClass.execRedefine(targetFileNameList, inst);
                 } catch (JavaRedefineException e) {
-                    e.printStackTrace();
+                    throw new ThreadException(e);
                 }
             }
         },1000L, 1000L, TimeUnit.MILLISECONDS);
