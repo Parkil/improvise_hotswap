@@ -1,5 +1,6 @@
 package hotswap.watcher;
 
+import com.sun.nio.file.SensitivityWatchEventModifier;
 import hotswap.event_queue.FileEventBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +23,9 @@ public class FileWatcher {
 
         List<Path> subPathList = FileUtil.findAllSubPath(watchBasePath); // watchBasePath 포함
 
+        WatchEvent.Kind<?>[] eventArr = new WatchEvent.Kind<?>[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY};
         for(Path path : subPathList) {
-            path.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            path.register(watchService, eventArr, SensitivityWatchEventModifier.HIGH);
         }
 
         return watchService;
@@ -61,6 +63,7 @@ public class FileWatcher {
         WatchKey watchKey;
         while((watchKey = watchService.take()) != null) {
             List<WatchEvent<?>> watchEventList = watchKey.pollEvents();
+            logger.info("event list : {}", watchEventList);
 
             boolean offerResult = FileEventBlockingQueue.getInstance().addWatchFilEvent(filterWatchEventList(watchEventList));
 

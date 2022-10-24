@@ -17,7 +17,7 @@ public class AgentMain {
     public static void premain(String agentArgs, Instrumentation inst) {
         //vm option example : -javaagent:~.jar -Dhotswap.watch.root=src/main/java
         try {
-            Config.setWatchRootPath(System.getProperty("hotswap.watch.root"));
+            Config.setWatchRootPath(System.getProperty("hotswap.watch.root1"));
             Config.createTempClassPath();
 
             logger.info("hotswap starting watch root : {}", Config.getWatchRootPath());

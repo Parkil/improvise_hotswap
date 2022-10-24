@@ -24,3 +24,4 @@ exception.exception.ConfigException: path[<java file root path>] is invalid file
 If you are using spring-boot-devtools in target java app then hotswap won't work
 
 
+
