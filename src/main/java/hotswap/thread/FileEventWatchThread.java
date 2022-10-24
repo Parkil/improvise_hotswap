@@ -2,12 +2,12 @@ package hotswap.thread;
 
 import config.Config;
 import exception.runtime.ThreadException;
-import hotswap.watcher.FileWatcher;
+import hotswap.watcher.DirectoryFileWatcher;
+import io.methvin.watcher.DirectoryWatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.WatchService;
 import java.util.concurrent.*;
 
 public class FileEventWatchThread {
@@ -18,16 +18,13 @@ public class FileEventWatchThread {
     // producer
     public void startWatchServiceThread() {
         executorService.execute(() -> {
-            FileWatcher fileWatcher = new FileWatcher();
+            DirectoryFileWatcher directoryFileWatcher = new DirectoryFileWatcher();
             try {
                 logger.info("watch service thread started");
-                WatchService watchService = fileWatcher.initWatcher(Config.getWatchRootPath());
-                fileWatcher.fileWatchEventPooling(watchService);
+                DirectoryWatcher directoryWatcher = directoryFileWatcher.initWatcher(Config.getWatchRootPath());
+                directoryWatcher.watch();
             } catch (IOException ioe) {
                 throw new ThreadException(ioe);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                throw new ThreadException(ie);
             }
         });
     }

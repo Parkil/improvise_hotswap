@@ -10,17 +10,13 @@ repositories {
 }
 
 dependencies {
-    implementation 'junit:junit:4.13.2'
     implementation 'org.slf4j:slf4j-api:2.0.3'
-    implementation 'ch.qos.logback:logback-classic:1.4.4'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.2'
-
     implementation 'io.methvin:directory-watcher:0.16.1'
 
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.awaitility:awaitility:4.2.0'
     testImplementation 'org.awaitility:awaitility-proxy:3.1.6'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.2'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.2'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
@@ -39,4 +35,16 @@ tasks.named('jar') {
             'Can-Retransform-Classes': true
         )
     }
+}
+
+task customFatJar(type: Jar) {
+    manifest {
+        attributes  'Agent-Class': 'agent.AgentMain',
+                    'Premain-Class': 'agent.AgentMain',
+                    'Can-Redefine-Classes': true,
+                    'Can-Retransform-Classes': true
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }

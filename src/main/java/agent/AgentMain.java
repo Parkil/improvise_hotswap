@@ -3,7 +3,6 @@ package agent;
 import config.Config;
 import exception.exception.ConfigException;
 import hotswap.thread.FileEventWatchThread;
-import hotswap.thread.ProcessFileEventThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,13 +16,11 @@ public class AgentMain {
     public static void premain(String agentArgs, Instrumentation inst) {
         //vm option example : -javaagent:~.jar -Dhotswap.watch.root=src/main/java
         try {
-            Config.setWatchRootPath(System.getProperty("hotswap.watch.root1"));
+            Config.setWatchRootPath(System.getProperty("hotswap.watch.root"));
             Config.createTempClassPath();
-
-            logger.info("hotswap starting watch root : {}", Config.getWatchRootPath());
+            Config.setRedefineClass(inst);
 
             new FileEventWatchThread().startWatchServiceThread();
-            new ProcessFileEventThread().processEventThread(inst);
         } catch (ConfigException e) {
             e.printStackTrace();
         }

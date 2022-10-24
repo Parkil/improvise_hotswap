@@ -22,9 +22,16 @@ public class RedefineClass {
 
     private final Logger logger = LoggerFactory.getLogger(RedefineClass.class);
 
-    private final CompileJava compileJava = new CompileJava();
+    private final CompileJava compileJava;
 
-    public void execRedefine(List<String> classNameList, Instrumentation inst) throws JavaRedefineException {
+    private final Instrumentation inst;
+
+    public RedefineClass(Instrumentation inst) {
+        this.compileJava = new CompileJava();
+        this.inst = inst;
+    }
+
+    public void execRedefine(List<String> classNameList) throws JavaRedefineException {
         classNameList = Optional.ofNullable(classNameList).orElse(Collections.emptyList());
 
         for(String className : classNameList) {
@@ -36,11 +43,11 @@ public class RedefineClass {
                 throw new JavaRedefineException(e);
             }
 
-            redefineClass(findFileList, inst);
+            redefineClass(findFileList);
         }
     }
 
-    private void redefineClass(List<Path> javaFilePathList, Instrumentation inst) throws JavaRedefineException{
+    private void redefineClass(List<Path> javaFilePathList) throws JavaRedefineException{
         List<ClassFileInfo> classFileInfoList = compileJava.findClassPaths(javaFilePathList);
 
         for(ClassFileInfo classFileInfo : classFileInfoList) {

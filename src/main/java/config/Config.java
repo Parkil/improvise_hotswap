@@ -1,9 +1,11 @@
 package config;
 
 import exception.exception.ConfigException;
+import hotswap.compiler.RedefineClass;
 import util.FileUtil;
 
 import java.io.File;
+import java.lang.instrument.Instrumentation;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -13,6 +15,8 @@ public class Config {
     private static Path watchRootPath = Path.of("src", "main", "java");
 
     private static final File tempClassPath = new File("build/hotswap_temp");
+
+    private static RedefineClass redefineClass;
 
     private Config(){}
 
@@ -44,4 +48,15 @@ public class Config {
     }
 
     public static File getTempClassPath() { return tempClassPath; }
+
+    public static void setRedefineClass(Instrumentation inst) {
+        redefineClass = new RedefineClass(inst);
+    }
+
+    public static RedefineClass getRedefineClass() throws ConfigException {
+        if(redefineClass == null) {
+            throw new ConfigException("RedefineClass not initialized");
+        }
+        return redefineClass;
+    }
 }
