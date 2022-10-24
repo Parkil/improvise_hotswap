@@ -12,7 +12,6 @@ import javax.tools.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -41,16 +40,11 @@ public class CompileJava {
 
         List<Diagnostic<? extends JavaFileObject>> diagnosticList = diagnostics.getDiagnostics();
 
-        if(diagnosticList.isEmpty()) {
-            logger.info("java file compile success [java file cnt : {}]", javaPathList.size());
-        }else {
-            diagnosticList.forEach(row ->
-                logger.info("compile error file :{}, line : {}, code : {}, msg : {}",
-                        row.getSource().getName(), row.getLineNumber(), row.getCode(),
-                        row.getMessage(Locale.ENGLISH))
-            );
-            throw new JavaCompileException("java compile error");
+        if(!diagnosticList.isEmpty()) {
+            throw new JavaCompileException("java compile error", diagnosticList);
         }
+
+        logger.info("java file compile success [java file cnt : {}]", javaPathList.size());
     }
 
     public List<ClassFileInfo> findClassPaths(List<Path> javaPathList) {
